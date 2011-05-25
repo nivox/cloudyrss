@@ -1,0 +1,76 @@
+
+<project name="cloudyrss" default="compile" basedir=".">
+    <description>
+      CloudyRSS: a simple application that uses cloudcast (via cloudypeer) to diffuse rss feeds
+    </description>
+
+  <!-- set locations -->
+  <property name="src-dir"      location="src"/>
+  <property name="build-dir"    location="build"/>
+  <property name="dist-dir"     location="dist"/>
+  <property name="lib-dir"      location="lib"/>
+
+  <property environment="env"/>
+
+  <!-- set project metadata -->
+  <property name="cloudyrss" value="cloudyrss"/>
+  <property name="version" value="0.1"/>
+
+  <!-- set sources properties -->
+  <property name="dist-includes" value="cloudyrss/**"/>
+
+  <!-- set paths -->
+  <path id="classpath.compile">
+    <fileset dir="${lib-dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="classpath.run">
+    <path refId="classpath.compile"/>
+    <pathelement location="${build-dir}"/>
+  </path>
+
+  <!--
+      *********************************************************************
+      *                Targets definition
+      **********************************************************************
+  -->
+  <target name="init">
+    <tstamp/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the source">
+    <mkdir dir="${build-dir}"/>
+    <javac srcdir="${src-dir}"
+           destdir="${build-dir}"
+           debug="true"
+           target="1.5"
+           includeAntRuntime="false">
+      <classpath>
+        <path refid="classpath.compile"/>
+      </classpath>
+    </javac>
+    <copy toDir="${build-dir}">
+      <fileset dir="${src-dir}">
+        <include name="**/*.properties"/>
+        <include name="**/*.gif"/>
+        <include name="**/*.png"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="dist" depends="compile" description="generate the distribution" >
+    <mkdir dir="${dist-dir}"/>
+    <jar jarfile="${dist-dir}/${cloudyrss}-${version}.jar" basedir="${build-dir}"
+         includes="${dist-includes}"/>
+    <copy toDir="${dist-dir}/">
+      <fileset dir="${lib-dir}"/>
+    </copy>
+  </target>
+
+  <target name="clean" description="clean up" >
+    <delete dir="${build-dir}"/>
+    <delete dir="${dist-dir}"/>
+  </target>
+</project>
